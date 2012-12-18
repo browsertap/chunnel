@@ -2,9 +2,9 @@ Local Tunnel for the service: [Browsertap](http://browsertap.com)
 
 ### Features
 
+- Minimal setup required. Just run `taptunnel` in terminal and you're done.
 - Allows you to run any locally hosted website.
 - Runs by default on port 443 for additional security.
-- Allows you to test *any* file on your computer with ease. In your browser, type `file://path/to/file`, and click the `browsertap` button while taptunnel is running.
 - Instantly see changes in your browser after tweaking website (think [CodeKit](http://codekit.com), or [LiveReload](http://livereload.com)).
 
 ### Installation
