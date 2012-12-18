@@ -5,7 +5,7 @@ Local Tunnel for the service: [Browsertap](http://browsertap.com)
 - Minimal setup required. Just run `taptunnel` in terminal and you're done.
 - Allows you to run any locally hosted website.
 - Runs by default on port 443 for additional security.
-- Instantly see changes in your browser after tweaking website (think [CodeKit](http://codekit.com), or [LiveReload](http://livereload.com)).
+- Instantly see your website update in your browser after making changes. No need to refresh your page. (think [CodeKit](http://codekit.com), or [LiveReload](http://livereload.com)).
 
 ### Installation
 
