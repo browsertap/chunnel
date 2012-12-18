@@ -1,6 +1,6 @@
 
 all:
-	@mkdir release; nexe -i . -o ./release/taptunnel
+	@mkdir release; nexe -o ./release/taptunnel
 
 
 clean:
