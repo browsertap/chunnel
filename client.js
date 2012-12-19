@@ -7,12 +7,15 @@ step = require("step");
 var i = 0;
 
 var server = http.createServer(function(req, res) {
-	console.log(req.headers)
+	// console.log(req.headers)
+	console.log(req.url);
 
 		// res.end("hello world! " + (i++));
 	setTimeout(function() {
-		res.end("hello world! " + (i++));
+
+		res.end("hello world! " + (i++) + req.url);
 	}, 5000);
+	// res.end("hello world!" + (i++));
 });
 
 server.listen(8088);
@@ -28,6 +31,7 @@ var Client = module.exports = structr(EventEmitter, {
 
 	"__construct": function(ops) {
 
+		this._name   = ops.name || "test";
 		this._server = ops.server; // { host: "127.0.0.1", port: 8090 }
 		this._proxy  = ops.proxy; // { host: "localhost", port: 8080 }
 
@@ -55,33 +59,29 @@ var Client = module.exports = structr(EventEmitter, {
 		var c = net.connect(this._server),
 		self = this;
 
-		c.on("data", function() {
-			console.log("OK")
-		})
+		step(
+			function() {
+				c.once("data", this);
+				c.write(self._name ? "handshake:" + self._name : "handshake");
+			},
+			function(key) {
+				self._key = String(key);
+				c.on("data", function() {
+					self._addProxy(key);
+				});
+			}
+		);
+	},
 
-		c.on("connect", function() {
-			step(
-				function() {
-					c.once("data", this);
-					c.write(self._key || "test");
-				},
-				function(key) {
-					self._key = key;
-					c.once("data", this);
-				},
-				function(data) {
-					console.log("DAT")
-					var c2 = net.connect(self._proxy);
-					c2.write(data);
-					c.pipe(c2).pipe(c);
+	/**
+	 */
 
-					//establish a new connection
-					self._connect();
-				}
-			);
-		})
-
-		
+	"_addProxy": function(key) {
+		var c = net.connect(this._server), self = this,
+		c2 = net.connect(self._proxy);
+		c.write("connection:" + key);
+		c2.pipe(c);
+		c.pipe(c2);
 	}
 
 

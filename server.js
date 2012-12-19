@@ -8,7 +8,8 @@ _ = require("underscore"),
 bijection = require("./bijection"),
 guid = require("guid"),
 http = require("http"),
-inherits = require("util").inherits;
+inherits = require("util").inherits,
+outcome = require("outcome");
 
 var Server = structr(EventEmitter, {
 
@@ -23,9 +24,12 @@ var Server = structr(EventEmitter, {
 	 */
 
 	"listen": function(port, httpPort) {
+
+		//listen for clients to proxy
 		net.createServer(_.bind(this._onClient, this)).listen(port);
+
+		//listen for incomming 
 		net.createServer(_.bind(this._onHttpClient, this)).listen(httpPort || (port + 1));
-		// net.createServer(_)
 	},
 
 	/**
@@ -41,35 +45,30 @@ var Server = structr(EventEmitter, {
 	"_onHttpClient": function(c) {
 		var self = this;
 
-		c.pause();
 
+		function onErr() {
+			c.write("Not Found");
+			c.end();
+		}
+
+		var on = outcome.error(onErr);
 
 		step(
-			function(h) {
-				self._pool.get("test", this);
-			},
-			function(err, con) {
-				c.on("data", function(data) {
-					console.log(String(data));
-				})
-				c.pipe(con).pipe(c);
-				// con.pipe(c).pipe(con)
-				c.resume();
-			}
-
-		);
-		/*step(
 			function() {
 				c.once("data", this);
 			},
-			function(headers) {
-				headers = String(headers);
-				var Host = headers
-				console.log(headers);
-			}
-		);*/
+			function(h) {
+				this.headers = h;
+				self._pool.get("test", this);
+			},
+			on.s(function(con) {
+				c.pipe(con);
+				con.pipe(c);
+				con.write(this.headers);
+				c.resume();
+			})
 
-		
+		);
 	}
 });
 
@@ -91,6 +90,7 @@ var ConnectionPool = structr({
 	 */
 
 	"__construct": function() {
+		this._handshakes = {};
 		this._connections = {};
 		this._queue = {};
 		this._all = [];
@@ -102,83 +102,88 @@ var ConnectionPool = structr({
 
 	"add": function(con) {
 
-
-
 		var self = this;
 		step(
 			function() {
 				con.once("data", this);
 			},
 			function(k) {
-				var key = self._keys.get(String(k)),
-				name = key.split(":").shift();
 
+				var kp = String(k).split(":"),
+				cmd = kp.shift(),
+				key = self._keys.get(kp.join(":"));
 
-				if(!self._connections[name]) self._connections[name] = [];
-				self._connections[name].push(con);
-				var cb = self._next(name);
-				if(cb) cb(null, con);
-
-				console.log("add con pool name=%s n=%s", name, self._connections[name].length);
-
-				con.on("end", _.bind(self._remove, self, name, con));
+				//command = handshake? It's the first request. We also use this to open new connections
+				//for EACH request to the local tunnel
+				if(cmd == "handshake") {
+					self._handshake(key, con);
+				} else {
+					self._add(key, con);
+				}
 			}
 		);
 	},
 
+	/**
+	 * adds a handshake
+	 */
+
+	"_handshake": function(key, con) {
+		console.log("handshake %s", key);
+		var name = key.split(":").shift(),
+		self = this;
+		this._handshakes[name] = con;
+		con.write(key);
+
+		con.on("end", function() {
+			self._keys.remove(name);
+			delete self._handshakes[name];
+		});
+	},
 
 	/**
+	 * adds a new connection
+	 */
+
+	"_add": function(key, con) {
+		console.log("connection %s", key);
+		var name = key.split(":").shift();
+		var cb = this._next(name);
+		if(cb) { 
+			cb(null, con);
+		} else {
+			con.close();
+		}
+	},
+
+
+	/**
+	 * returns the NEXT proxiable connection
 	 */
 
 	"_next": function(name) {
-		var ret;
-
-		if(this._queue[name]) {
-			this._remove(ret = this._queue[name].shift());
-		}
-
-		return ret;
+		if(this._queue[name]) return this._queue[name].shift();
 	},
 
 	/**
-	 */
-
-	"_remove": function(name, con) {
-
-		if(!con) return;
-
-		if(this._queue[name]) {
-			var i = this._queue[name].indexOf(con);
-			if(~i) this._queue[name].splice(con);
-			if(!this._queue[name].length) {
-				delete this._queue[name];
-			}
-		}
-
-		if(this._connections[name]) {
-			var i = this._connections[name].indexOf(con);
-			if(~i) this._connections[name].splice(con);
-			if(!this._connections[name].length) {
-				delete this._connections[name];
-			}
-		} 
-
-		this._keys.remove(name);
-	},
-
-	/**
+	 * 
 	 */
 
 	"get": function(name, cb) {
-		var self = this;
 
-		if(this._connections[name] && this._connections[name].length) {
-			return cb.call(null, null, this._connections[name].shift());
+		//handshake doesn't exist?
+		if(!this._handshakes[name]) {
+			return cb(new Error("404"));
 		}
 
+		var self = this;
 		if(!this._queue[name]) this._queue[name] = [];
 
 		this._queue[name].push(cb);
+
+		//writing to the handshake client tells it to open a new connection
+		this._handshakes[name].write("1");
+
 	}
 });
 
@@ -194,7 +199,7 @@ var Keys = structr({
 		secret = keyParts.shift();
 
 		//name does not exist? generate one
-		if(name == "new") {
+		if(!name.length) {
 			name = bijection.encode(this._i++);
 		}
 

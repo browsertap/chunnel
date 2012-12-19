@@ -6,6 +6,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "dependencies": {
+    "comerr": "0.0.x",
+    "outcome": "0.0.x",
+    "guid": "0.0.x",
+    "step": "0.0.x",
+    "structr": "0.2.x",
+    "underscore": "1.4.x",
+    "optimist": "0.3.x",
+    "socksified": "0.0.x"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/browsertap/taptunnel.git"
