@@ -1,0 +1,2 @@
+#!/usr/bin/env node
+require("../lib/server").listen(9432, 9433);
