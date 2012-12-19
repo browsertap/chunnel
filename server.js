@@ -108,18 +108,7 @@ var ConnectionPool = structr({
 				con.once("data", this);
 			},
 			function(k) {
-
-				var kp = String(k).split(":"),
-				cmd = kp.shift(),
-				key = self._keys.get(kp.join(":"));
-
-				//command = handshake? It's the first request. We also use this to open new connections
-				//for EACH request to the local tunnel
-				if(cmd == "handshake") {
-					self._handshake(key, con);
-				} else {
-					self._add(key, con);
-				}
+				self._handshake(self._keys.get(String(k)), con);
 			}
 		);
 	},
@@ -133,29 +122,12 @@ var ConnectionPool = structr({
 		var name = key.split(":").shift(),
 		self = this;
 		this._handshakes[name] = con;
-		con.write(key);
 
 		con.on("end", function() {
 			self._keys.remove(name);
 			delete self._handshakes[name];
 		});
 	},
-
-	/**
-	 * adds a new connection
-	 */
-
-	"_add": function(key, con) {
-		console.log("connection %s", key);
-		var name = key.split(":").shift();
-		var cb = this._next(name);
-		if(cb) { 
-			cb(null, con);
-		} else {
-			con.close();
-		}
-	},
-
 
 	/**
 	 * returns the NEXT proxiable connection
@@ -176,13 +148,7 @@ var ConnectionPool = structr({
 			return cb(new Error("404"));
 		}
 
-		var self = this;
-		if(!this._queue[name]) this._queue[name] = [];
-
-		this._queue[name].push(cb);
-
-		//writing to the handshake client tells it to open a new connection
-		this._handshakes[name].write("1");
+		cb(null, this._handshakes[name]);
 
 	}
 });
@@ -199,7 +165,7 @@ var Keys = structr({
 		secret = keyParts.shift();
 
 		//name does not exist? generate one
-		if(!name.length) {
+		if(name == "new") {
 			name = bijection.encode(this._i++);
 		}
 
