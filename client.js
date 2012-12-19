@@ -1,7 +1,6 @@
 var http = require("http"),
 net  = require("net"),
 EventEmitter = require("events").EventEmitter,
-Url = require("url"),
 step = require("step");
 
 var i = 0;
@@ -10,11 +9,9 @@ var server = http.createServer(function(req, res) {
 	// console.log(req.headers)
 	console.log(req.url);
 
-		// return res.end("hello world! " + (i++));
-	setTimeout(function() {
 
-		res.end("hello world! " + (i++) + req.url);
-	}, 5000);
+
+		return res.end("hello world! " + (i++));
 	// res.end("hello world!" + (i++));
 });
 
@@ -31,7 +28,7 @@ var Client = module.exports = structr(EventEmitter, {
 
 	"__construct": function(ops) {
 
-		this._name   = ops.name || "test";
+		this._name   = ops.name;
 		this._server = ops.server; // { host: "127.0.0.1", port: 8090 }
 		this._proxy  = ops.proxy; // { host: "localhost", port: 8080 }
 
@@ -57,18 +54,29 @@ var Client = module.exports = structr(EventEmitter, {
 
 	"_connect": function() {
 		
-		var self = this;
+		var self = this, key = self._name;
 
 		function connect() {
+
 			console.log("connecting %s:%d <- -> %s:%d", self._server.host, self._server.port, self._proxy.host, self._proxy.port);
+
 			var c = net.connect(self._server),
 			c2 = net.connect(self._proxy),
 			reconnected = false;
 
-			c.write(self._name || "new");
-			c2.pipe(c);
-			c.pipe(c2);
+			c.once("data", function(k) {
+				key = String(k);
+				c2.pipe(c);
+				c.pipe(c2);
 
+				self.emit("remote", {
+					address: key.split(":").shift(":") + "." + self._server.host
+				});
+			});
+
+
+			c.write(key || "new");
+			
 			function onEnd() {
 				if(reconnected) return;
 				reconnected = true;
@@ -89,44 +97,15 @@ var Client = module.exports = structr(EventEmitter, {
 
 		connect();
 
-
-
-
-
-		/*step(
-			function() {
-				c.once("data", this);
-				c.write(self._name ? "handshake:" + self._name : "handshake");
-			},
-			function(key) {
-				self._key = String(key);
-				c.on("data", function() {
-					self._addProxy(key);
-				});
-			}
-		);*/
-	},
-
-	/**
-	 */
-
-	"_addProxy": function(key) {
-		console.log("G")
-		var c = net.connect(this._server), self = this,
-		c2 = net.connect(self._proxy);
-		c.write("connection:" + key);
-		c2.pipe(c);
-		c.pipe(c2);
 	}
-
-
 });
 
 
 
 var c = new Client({
+	name: "test",
 	server: { host: "localhost", port: 8089 },
-	proxy: { host: "localhost", port: 8088}
+	proxy: { host: "localhost", port: 8088 }
 });
 
 c.connect(function(err, resp) {

@@ -59,7 +59,9 @@ var Server = structr(EventEmitter, {
 			},
 			function(h) {
 				this.headers = h;
-				self._pool.get("test", this);
+				var host = String(h).match(/host:\s+([^\r]+)/i);
+				if(!host) return onErr("host doesn't exist");
+				self._pool.get(host[1].split(".").shift(), this);
 			},
 			on.s(function(con) {
 				c.pipe(con);
@@ -84,7 +86,7 @@ var WaitingAgent = function(options) {
 inherits(WaitingAgent, http.Agent);
 
 
-var ConnectionPool = structr({
+var ConnectionPool = structr(EventEmitter, {
 
 	/**
 	 */
@@ -122,11 +124,14 @@ var ConnectionPool = structr({
 		var name = key.split(":").shift(),
 		self = this;
 		this._handshakes[name] = con;
+		con.write(key);
 
 		con.on("end", function() {
 			self._keys.remove(name);
 			delete self._handshakes[name];
 		});
+
+		// self.emit(key, con);
 	},
 
 	/**
