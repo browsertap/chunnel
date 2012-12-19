@@ -1,4 +1,4 @@
-var require = function (file, cwd) {
+(function(){var require = function (file, cwd) {
     var resolved = require.resolve(file, cwd || '/');
     var mod = require.modules[resolved];
     if (!mod) throw new Error(
@@ -390,3 +390,25 @@ process.binding = function (name) {
 })();
 
 });
+
+require.define("/browser.js",function(require,module,exports,__dirname,__filename,process,global){// var tlds = ["com", "net", "org", ""]
+
+exports.proxy = function(host, cb) {
+	var tld = host.split(".").pop();
+
+	console.log(tld)
+
+	if(tld.length > 2 && tld.length < 5) {
+		console.log("%s is not local, skipping taptunnel", tld);
+		return cb(null, host);
+	} else {
+		console.log("G")
+		console.log("running %s through taptunnel", tld);
+		$.getJSON("localhost:9142?proxy=" + encodeURIComponent(host), function(data) {
+			cb(null, data.result);
+		});
+	}
+}
+});
+require("/browser.js");
+})();
