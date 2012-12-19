@@ -1,2 +1,8 @@
 #!/usr/bin/env node
-require("../lib/server").listen(9432, 9433);
+if(process.argv.pop() == "server") {
+	require("../lib/server").listen(9432, 9433);
+	console.log("running server");
+} else {
+	require("../lib/cli");
+	console.log("running client");
+}

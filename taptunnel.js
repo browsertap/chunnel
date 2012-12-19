@@ -1,4 +1,4 @@
-(function(){var require = function (file, cwd) {
+var require = function (file, cwd) {
     var resolved = require.resolve(file, cwd || '/');
     var mod = require.modules[resolved];
     if (!mod) throw new Error(
@@ -390,10 +390,3 @@ process.binding = function (name) {
 })();
 
 });
-
-require.define("/browser.js",function(require,module,exports,__dirname,__filename,process,global){exports.proxy = function(host, cb) {
-	
-}
-});
-require("/browser.js");
-})();
