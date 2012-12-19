@@ -1,6 +1,6 @@
 {
   "name": "taptunnel",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Local Tunnel for the service: [Browsertap](http://browsertap.com)",
   "main": "./lib/cli.js",
   "scripts": {
