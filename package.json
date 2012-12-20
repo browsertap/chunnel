@@ -1,6 +1,6 @@
 {
   "name": "taptunnel",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Local Tunnel for the service: [Browsertap](http://browsertap.com)",
   "main": "./lib/cli.js",
   "scripts": {
@@ -15,7 +15,9 @@
     "underscore": "1.4.x",
     "vine": "0.1.x",
     "send": "0.1.x",
-    "commander": "1.1.x"
+    "commander": "1.1.x",
+    "colors": "0.6.x",
+    "sprintf": "0.1.x"
   },
   "bin": {
     "taptunnel": "./bin/server"
