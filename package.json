@@ -13,7 +13,9 @@
     "send": "0.1.x",
     "commander": "1.1.x",
     "colors": "0.6.x",
-    "sprintf": "0.1.x"
+    "sprintf": "0.1.x",
+    "plugin":"0.2.x",
+    "mime":"1.2.x"
   },
   "bin": {
     "taptunnel": "./taptunnel.sh"
