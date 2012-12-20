@@ -1,11 +1,7 @@
 {
   "name": "taptunnel",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "Local Tunnel for the service: [Browsertap](http://browsertap.com)",
-  "main": "./lib/cli.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "dependencies": {
     "comerr": "0.0.x",
     "outcome": "0.0.x",
@@ -20,9 +16,9 @@
     "sprintf": "0.1.x"
   },
   "bin": {
-    "taptunnel": "./bin/server"
+    "taptunnel": "./taptunnel.sh"
   },
-  "browserify": "./lib/browser.js",
+  "browserify": "./src/browser.js",
   "repository": {
     "type": "git",
     "url": "git://github.com/browsertap/taptunnel.git"
