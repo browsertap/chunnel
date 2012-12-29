@@ -4,7 +4,7 @@ var path = require("path");
 exports.proxy = function(host, cb) {
 	// var tld = host.split(".").pop().split("/").shift().split(":").shift();
 
-	host = host.replace(/:\//,"://");
+	host = host.replace(/:\/+/,"://");
 	// console.log(host)
 	
 	console.log(getLocation(host).hostname, getLocation(host).host)
@@ -13,7 +13,7 @@ exports.proxy = function(host, cb) {
 	// console.log(hi)
 
 	// console.log(tld)
-	console.log(host.split(".").pop().split("/").shift())
+	// console.log(host.split(".").pop().split("/").shift())
 
 
 	if(host.substr(0, 5) != "file:" && tld.length > 1 && tld.length < 5) {

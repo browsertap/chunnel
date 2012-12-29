@@ -1,6 +1,6 @@
 {
   "name": "taptunnel",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Local Tunnel for the service: [Browsertap](http://browsertap.com)",
   "bin": {
     "taptunnel": "./app.sh"
