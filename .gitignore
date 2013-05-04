@@ -1,3 +1,4 @@
 .DS_Store
 ./dist
 ./TapTunnel
+node_modules
