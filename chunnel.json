@@ -1,7 +1,6 @@
 {
-	"server": "192.168.30.162:9526",
+	"server": "192.168.30.154:9526",
 	"tunnel": {
-		"browsertap.com": "localhost",
-		"spiceapps.com": "spiceapps.dev"
+		"teach.classdojo.dev": "teach.classdojo.dev"
 	}	
 }
