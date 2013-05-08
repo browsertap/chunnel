@@ -49,6 +49,7 @@ class Handshake extends EventEmitter
       con.write("success:#{c.cid}:#{c.secret}:#{domain}")
 
       con.once "close", () =>
+        console.log "disconnect #{domain}"
         @connections.remove domain
 
 
