@@ -28,10 +28,10 @@ class Hosts
 
   unset: (domain) ->
     for ip of @_hosts
-      for domain of @_hosts[ip]
-        i = @_hosts[ip].indexOf domain
-        if ~i
-          @_hosts[ip].splice(i, 1)
+      i = @_hosts[ip].indexOf domain
+      if ~i
+        @_hosts[ip].splice(i, 1)
+
 
     @save()
 

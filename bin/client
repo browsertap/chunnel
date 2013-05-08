@@ -3,19 +3,26 @@ optimist = require("optimist")
 client   = require("..").client
 
 argv = optimist.
-demand(["proxy", "domain", "server"]).
-default("proxy", "127.0.0.1:8080").
+usage('Usage: $0 [port] [domain]').
+demand(["server"]).
 default("server", "127.0.0.1:81").
-default("domain", "localhost").
-describe("domain", "the domain to set on the server").
-describe("proxy", "the domain / ip to proxy").
-describe("port", "the domain port").
 argv
+
+
+var portOrProxy = String(argv._.shift()) || "localhost:8080",
+domain = argv._.shift() || "localhost",
+proxy;
+
+if(~portOrProxy.indexOf(":")) {
+  proxy = portOrProxy;
+} else {
+  proxy = "127.0.0.1:" + portOrProxy;
+}
 
 
 client.connect({
   server: argv.server,
-  domain: argv.domain,
-  proxy: argv.proxy
+  domain: domain,
+  proxy: proxy
 })
 

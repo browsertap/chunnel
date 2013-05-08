@@ -1,5 +1,4 @@
-Sets up a tunnel between two computers
-
+Chunnel allows you to create an HTTP tunnel between any two computers. 
 
 ## CLI Example
 
@@ -7,13 +6,13 @@ Sets up a tunnel between two computers
 First setup the server:
 
 ```bash
-taptunnel-server --port=80
+chunnel-server --port=80
 ```
 
 Next, setup the client:
 
 ```bash
-taptunnel 8080 --server=http://10.0.1.13
+chunnel --proxy 
 ```
 
 
