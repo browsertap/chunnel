@@ -34,12 +34,12 @@ class Client extends EventEmitter
         cid    = kp.shift()
         secret = kp.shift()
         domain = kp.shift()
-        console.log "tunnel is now accessible via \"#{domain}\""
+        console.log "tunnel \"#{options.proxy}\" is now accessible via \"#{domain}\" on \"#{options.server}\""
 
       # pipe
       c.on "data", (data) =>
         for i in String(data).split("1")
-          console.log "creating tunnel"
+          console.log "creating http connection"
           c2 = net.connect(Number(proxyParts.port), proxyParts.hostname)
           c = net.connect(Number(hostParts.port), hostParts.hostname)
           c.write("tunnel:#{cid}:#{secret}:#{domain}")
