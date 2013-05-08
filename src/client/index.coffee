@@ -40,7 +40,7 @@ class Client extends EventEmitter
       c.on "data", (data) =>
         for i in String(data).split("1")
           console.log "creating http connection"
-          c2 = net.connect(Number(proxyParts.port), proxyParts.hostname)
+          c2 = net.connect(Number(proxyParts.port or 80), proxyParts.hostname)
           c = net.connect(Number(hostParts.port), hostParts.hostname)
           c.write("tunnel:#{cid}:#{secret}:#{domain}")
           c2.pipe(c)
