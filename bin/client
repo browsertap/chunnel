@@ -1,31 +1,51 @@
 #!/usr/bin/env node
 var optimist = require("optimist"),
 client   = require("..").client, 
-cfg;
+cfg,
+fs = require("fs")
 
 
 
-var argv = optimist.
-usage('Usage: $0 [port] [domain]').
-demand(["server"]).
-default("server", "127.0.0.1:9526").
-argv
+var cfgPath = process.cwd() + "/chunnel.json";
 
-
-var portOrProxy = String(argv._.shift()) || "localhost:8080",
-domain = argv._.shift() || "localhost",
-proxy;
-
-if(~portOrProxy.indexOf(":")) {
-  proxy = portOrProxy;
+if(fs.existsSync(cfgPath)) {
+  cfg = require(cfgPath);
+  var server = cfg.server;
+  for(var proxy in cfg.tunnel) {
+    client.connect({
+      server: server,
+      proxy: proxy,
+      domain: cfg.tunnel[proxy]
+    });
+  }
 } else {
-  proxy = "127.0.0.1:" + portOrProxy;
+
+
+
+  var argv = optimist.
+  usage('Usage: $0 [port] [domain]').
+  demand(["server"]).
+  default("server", "127.0.0.1:9526").
+  argv
+
+
+  var portOrProxy = String(argv._.shift()) || "localhost:8080",
+  domain = argv._.shift() || "localhost",
+  proxy;
+
+  if(~portOrProxy.indexOf(":")) {
+    proxy = portOrProxy;
+  } else {
+    proxy = "127.0.0.1:" + portOrProxy;
+  }
+
+  client.connect({
+    server: argv.server,
+    domain: domain,
+    proxy: proxy
+  }); 
 }
 
 
-client.connect({
-  server: argv.server,
-  domain: domain,
-  proxy: proxy
-})
+
 

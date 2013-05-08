@@ -48,11 +48,4 @@ class Client extends EventEmitter
 
 
 
-
-
-
-
-###
-###
-
 exports.connect = (options, callback) -> new Client().connect(options, callback)
