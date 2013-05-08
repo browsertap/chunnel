@@ -1,25 +1,39 @@
-Local Tunnel for the service: [Browsertap](http://browsertap.com)
+Sets up a tunnel between two computers
 
-### Features
 
-- Minimal setup required. Just run `taptunnel` in terminal and you're done.
-- Run any locally hosted website.
-- Runs by default on port 443 for additional security.
-- Instantly see your website update in your browser after making changes. No need to refresh your page. (think [CodeKit](http://codekit.com), or [LiveReload](http://livereload.com)).
+## CLI Example
 
-### Installation
 
-If you already have node.js installed, just install it as a global package:
+First setup the server:
 
 ```bash
-npm i taptunnel -g
+taptunnel-server --port=80
 ```
 
-### Basic Usage
+Next, setup the client:
 
-1. Run `taptunnel` in the command line.
-2. Open any browser, and navigate to your locally hosted website (e.g: localhost).
-3. Click the browsertap bookmarklet, or browser extension.
-4. You're testing `localhost` via browsertap!
+```bash
+taptunnel 8080 --server=http://10.0.1.13
+```
+
+
+## Node.js example
+
+Server:
+
+```javascript
+require("taptunnel").server.listen(80);
+```
+
+
+Client:
+
+```javascript
+require("taptunnel").client.connect({
+  server : "http://10.0.1.13" , // server to tunnel to
+  proxy  : "localhost:8080"   , // tunnel this to the server
+  domain : "localhost"        , // set this as the domain for the TLD on the server 
+})
+
 
 

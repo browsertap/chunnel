@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+optimist = require("optimist")
+client   = require("..").client
+
+argv = optimist.
+demand(["proxy", "domain", "server"]).
+default("proxy", "127.0.0.1:8080").
+default("server", "127.0.0.1:81").
+default("domain", "localhost").
+describe("domain", "the domain to set on the server").
+describe("proxy", "the domain / ip to proxy").
+describe("port", "the domain port").
+argv
+
+
+client.connect({
+  server: argv.server,
+  domain: argv.domain,
+  proxy: argv.proxy
+})
+

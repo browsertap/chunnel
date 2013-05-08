@@ -1,16 +1,17 @@
 {
-  "name": "taptunnel",
+  "name": "chunnel",
   "version": "0.1.3",
   "description": "Local Tunnel for the service: [Browsertap](http://browsertap.com)",
   "browserify": "./lib/browser.js",
   "bin": {
-    "taptunnel": "./bin/taptunnel"
+    "chunnel-server": "./bin/server",
+    "chunnel": "./bin/client"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/browsertap/taptunnel.git"
+    "url": "git://github.com/browsertap/chunnel.git"
   },
-  "main": "./lib/cli.js",
+  "main": "./lib/index.js",
   "author": "",
   "license": "BSD",
   "readmeFilename": "README.md",

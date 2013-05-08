@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+optimist = require("optimist")
+server   = require("..").server
+
+argv = optimist.
+default("port", 80).
+alias("p", "port").
+argv
+
+server.listen(argv.p)
