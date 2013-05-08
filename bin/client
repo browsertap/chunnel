@@ -1,8 +1,11 @@
 #!/usr/bin/env node
-optimist = require("optimist")
-client   = require("..").client
+var optimist = require("optimist"),
+client   = require("..").client, 
+cfg;
 
-argv = optimist.
+
+
+var argv = optimist.
 usage('Usage: $0 [port] [domain]').
 demand(["server"]).
 default("server", "127.0.0.1:9526").
