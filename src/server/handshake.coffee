@@ -34,7 +34,7 @@ class Handshake extends EventEmitter
   _addTunnel: (domain, cid, secret, con) ->
     @connections.addTunnel domain, cid, secret, con, (err) ->
       if err
-        console.log "connot add tunnel for \"#{domain}\":#{err.message}"
+        console.log "cannot add tunnel for \"#{domain}\":#{err.message}"
 
 
   ###
