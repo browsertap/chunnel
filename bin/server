@@ -3,8 +3,7 @@ optimist = require("optimist")
 server   = require("..").server
 
 argv = optimist.
-default("port", 80).
-alias("p", "port").
+usage('Usage: $0 [httpPort] [connectionPort]').
 argv
 
-server.listen(argv.p)
+server.listen(Number(argv._.shift()) || 80, Number(argv._.shift()))

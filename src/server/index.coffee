@@ -15,8 +15,10 @@ class Server
   ###
 
   listen: (httpPort, connectionPort) ->
-    net.createServer(this._onClient).listen(connectionPort or (httpPort + 1))
+    net.createServer(this._onClient).listen(connectionPort or connectionPort = 9526)
     net.createServer(this._onHttpClient).listen(httpPort)
+
+    console.log "listening on http port #{httpPort} and connection port #{connectionPort}"
 
   ###
   ###
