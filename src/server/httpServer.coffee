@@ -61,6 +61,7 @@ class HttpServer extends EventEmitter
 
   _onHttpClient: (con) =>
     onErr = (err) ->
+      console.error "http error: #{err?.message or "Unknown"}"
       con.write("Not Found: #{err?.message or "Unknown" }")
       con.end() 
 
@@ -72,11 +73,12 @@ class HttpServer extends EventEmitter
 
       host = hosts[1].split(":").shift()
 
-      console.log "proxy #{host}:#{@port}"
 
       client = @_clients[host]
       if not client
-        return onErr new Error "tunnel #{host} not found"
+        return onErr new Error "tunnel \"#{host}\" not found"
+
+      console.log "proxy #{host}:#{@port}"
 
       client.getConnection (e, c) =>
         return onErr(e) if e?

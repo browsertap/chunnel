@@ -33,7 +33,7 @@ if(fs.existsSync(cfgPath)) {
   domain = argv._.shift() || "localhost",
   proxy;
 
-  if(~String(portOrProxy).indexOf(":")) {
+  if(isNaN(portOrProxy)) {
     proxy = portOrProxy;
   } else {
     proxy = "127.0.0.1:" + portOrProxy;
