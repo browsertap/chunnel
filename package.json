@@ -1,6 +1,6 @@
 {
   "name": "chunnel",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Local Tunnel for the service: [Browsertap](http://browsertap.com)",
   "browserify": "./lib/browser.js",
   "bin": {
