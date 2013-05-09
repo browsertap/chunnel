@@ -76,9 +76,6 @@ class Hosts
       process.exit()
 
 
-  @instance: () => @_instance or (@_instance = new Hosts())
-
-
 module.exports = Hosts
 
 

@@ -6,4 +6,4 @@ argv = optimist.
 usage('Usage: $0 [httpPort] [connectionPort]').
 argv
 
-server.listen(Number(argv._.shift()) || 80, Number(argv._.shift()))
+server.listen(Number(argv._.shift() || 9526))

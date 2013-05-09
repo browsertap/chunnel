@@ -1,13 +1,14 @@
-EventEmitter = require("events").EventEmitter
-net = require "net"
+socket = require "../socket"
+SocketRouter = socket.Router
 Url = require "url"
+net = require "net"
 
-class Client extends EventEmitter
+class Client
 
   ###
   ###
 
-  connect: (@options, callback) ->
+  connect: (@options) ->
 
     if not ~options.server.indexOf("://")
       options.server = "http://#{options.server}"
@@ -15,36 +16,61 @@ class Client extends EventEmitter
     if not ~options.proxy.indexOf("://")
       options.proxy = "http://#{options.proxy}"
 
-    hostParts  = Url.parse options.server
-    proxyParts = Url.parse options.proxy
+    @hostParts = hostParts  = Url.parse options.server
+    @proxyParts = proxyParts = Url.parse options.proxy
 
-    c = net.connect(Number(hostParts.port), hostParts.hostname)
-    c.write "connect:#{options.domain}"
+    @_chunnelConnection = cc = socket.connect(hostParts.port, hostParts.hostname)
+      
+    cc.send "client", options.domain
 
-    # handshake
-    c.once "data", (data) =>
-      kp = String(data).split(":")
-      cmd = kp.shift()
+    cc.route 
+      error         : @_onError
+      success       : @_onConnected
+      getConnection : @_onGetConnection
+    
 
-      if cmd is "error"
-        console.error kp.shift()
-        return process.exit()
+  ###
+  ###
 
-      if cmd is "success"
-        cid    = kp.shift()
-        secret = kp.shift()
-        domain = kp.shift()
-        console.log "tunnel \"#{options.proxy}\" is now accessible via \"#{domain}\" on \"#{options.server}\""
+  _onError: (err) =>
+    console.error err.message
 
-      # pipe
-      c.on "data", (data) =>
-        for i in String(data).split("1")
-          console.log "creating http connection"
-          c2 = net.connect(Number(proxyParts.port or 80), proxyParts.hostname)
-          c = net.connect(Number(hostParts.port), hostParts.hostname)
-          c.write("tunnel:#{cid}:#{secret}:#{domain}")
-          c2.pipe(c)
-          c.pipe(c2)
+  ###
+  ###
+
+  _onConnected: (result) =>
+    return if @_connected
+    @_connected = true
+
+    # the connection index
+    @_cid = result.cid
+
+    # the secret for the connection
+    @_secret = result.secret
+
+    console.log "tunnel \"#{@options.proxy}\" is now accessible via \"#{@options.domain}\" on \"#{@options.server}\""
+
+
+  ###
+  ###
+
+  _onGetConnection: () =>
+    console.log "creating http connection"
+
+    # create a net connection for the proxy
+    c2 = net.connect(Number(@proxyParts.port or 80), @proxyParts.hostname)
+
+    # create a socket connection for chunnel
+    c = socket.connect(Number(@hostParts.port), @hostParts.hostname)
+
+    # send the connection off!
+    c.send "connection", { cid: @_cid, secret: @_secret }
+
+    c2.pipe(c.connection)
+    c.connection.pipe(c2)
+
+
+
 
 
 

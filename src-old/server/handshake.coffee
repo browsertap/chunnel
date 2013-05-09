@@ -2,7 +2,7 @@ EventEmitter = require("events").EventEmitter
 Connections  = require "./connections"
 outcome      = require "outcome"
 
-class Handshake extends EventEmitter
+class Handshake
   
   ###
   ###

@@ -29,11 +29,11 @@ if(fs.existsSync(cfgPath)) {
   argv
 
 
-  var portOrProxy = String(argv._.shift()) || "localhost:8080",
+  var portOrProxy = argv._.shift() || "localhost:8080",
   domain = argv._.shift() || "localhost",
   proxy;
 
-  if(~portOrProxy.indexOf(":")) {
+  if(~String(portOrProxy).indexOf(":")) {
     proxy = portOrProxy;
   } else {
     proxy = "127.0.0.1:" + portOrProxy;
