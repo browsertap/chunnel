@@ -40,7 +40,7 @@ if(fs.existsSync(cfgPath)) {
 
   for(var i = argv._.length; i--;) {
 
-    var argParts = argv._[i].split("@"),
+    var argParts = String(argv._[i]).split("@"),
     proxy = parsePortOrProxy(argParts.shift()),
     domain = parsePortOrProxy(argParts.shift() || proxy);
 
