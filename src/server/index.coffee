@@ -43,9 +43,8 @@ class ChunnelServer extends SocketServer
     # wrap around the socket
     @_clients[String(++@_cid)] = client = new ChunnelClient socket, domain
 
-    if not @_httpServers.listen domain, client
-      return socket.error new Error "cannot setup server on #{domain} (port might be taken)"
-
+    @_httpServers.listen domain, client
+    
     # listen when the connection closes
     client.once "close", () =>
       @_clients.splice(@_clients.indexOf(client), 1)
@@ -61,7 +60,7 @@ class ChunnelServer extends SocketServer
     if not client = @_clients[String(message.cid)]
       return socket.error new Error "cid does not exist"
 
-    console.log "adding http connection for #{client._domain}"
+    console.log "adding tunneled http connection for #{client._domain}"
 
     client.addConnection socket.connection, message.secret
 

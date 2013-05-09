@@ -26,7 +26,6 @@ class HttpServer extends EventEmitter
 
   hasClient: (domain) -> return not @_clients[domain]
 
-
   ###
   ###
 
