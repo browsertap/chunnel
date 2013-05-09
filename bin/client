@@ -23,27 +23,34 @@ if(fs.existsSync(cfgPath)) {
 
 
   var argv = optimist.
-  usage('Usage: $0 [port] [domain]').
+  usage('Usage: $0 [localhost:port] ...').
   demand(["server"]).
   default("server", "127.0.0.1:9526").
   argv
 
-
-  var portOrProxy = argv._.shift() || "localhost:8080",
-  domain = argv._.shift() || "localhost",
-  proxy;
-
-  if(isNaN(portOrProxy)) {
-    proxy = portOrProxy;
-  } else {
-    proxy = "127.0.0.1:" + portOrProxy;
+  function parsePortOrProxy(portOrProxy) {
+    var proxy;
+    if(isNaN(Number(portOrProxy))) {
+      proxy = portOrProxy;
+    } else {
+      proxy = "127.0.0.1:" + portOrProxy;
+    }
+    return proxy;
   }
 
-  client.connect({
-    server: argv.server,
-    domain: domain,
-    proxy: proxy
-  }); 
+  for(var i = argv._.length; i--;) {
+
+    var argParts = argv._[i].split("@"),
+    proxy = parsePortOrProxy(argParts.shift()),
+    domain = parsePortOrProxy(argParts.shift() || proxy);
+
+
+    client.connect({
+      server: argv.server,
+      domain: domain,
+      proxy: proxy
+    }); 
+  }
 }
 
 

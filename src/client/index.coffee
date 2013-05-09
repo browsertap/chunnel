@@ -27,7 +27,22 @@ class Client
       error         : @_onError
       success       : @_onConnected
       getConnection : @_onGetConnection
+
+    cc.connection.on "end", @_reconnect
+    cc.connection.on "error", @_reconnect
     
+
+  ###
+  ###
+
+  _reconnect: () =>
+    console.log "chunnel server has disconnected, reconnecting"
+    @_secret = undefined
+    @_cid = undefined
+    @_connected = false
+    setTimeout (() =>
+      @connect @options
+    ), 2000
 
   ###
   ###
