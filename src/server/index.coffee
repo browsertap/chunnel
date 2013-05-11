@@ -3,6 +3,8 @@ ChunnelClient = require "./client"
 EventEmitter  = require("events").EventEmitter
 SocketServer  = require("../socket").Server
 HttpServers   = require("./httpServers")
+hooks         = require "hooks"
+_ = require "underscore"
 
 class ChunnelServer extends SocketServer
 
@@ -11,17 +13,30 @@ class ChunnelServer extends SocketServer
 
   constructor: (@options) ->
     super()
+    @_setupHooks()
 
+    # password protected server
     @password = options.password
 
-
+    # connected clients
     @_clients = []
+
+    # the connection number - this is incremental
     @_cid     = 0
 
+    # the servers to launch for each client
     @_httpServers = new HttpServers()
 
-    @on "client", @_onChunnelClient
-    @on "connection", @_onHttpConnection
+    # new chunnel
+    @on "client"     , @connectClient
+
+    # new http connection
+    @on "connection" , @_onHttpConnection
+
+  ###
+  ###
+
+  _setupHooks: () ->
 
   ###
   ###
@@ -35,15 +50,21 @@ class ChunnelServer extends SocketServer
   ###
   ###
 
-  _onChunnelClient: (message, socket) ->
+  use: (module) -> module @
 
-    domain = message.domain
+
+  ###
+  ###
+
+  connectClient: (message, socket) ->
+
+    domain   = message.domain
     password = message.password
 
     if password isnt @password
       return socket.error "Incorrect password"
 
-    console.log "client \"#{message.username}\" connected on domain #{domain}"
+    console.log "client \"#{message.username or "unknown"}\" connected on domain #{domain}"
 
     # listen in on the domain provided by the initial handshake
     if not @_httpServers.hasClient domain
@@ -72,6 +93,15 @@ class ChunnelServer extends SocketServer
     console.log "adding tunneled http connection for #{client._domain}"
 
     client.addConnection socket.connection, message.secret
+
+
+  ###
+  ###
+
+  _setupHooks: () ->
+    _.extend @, hooks
+    @hook "connectClient", @connectClient
+
 
 
 module.exports = (options) -> new ChunnelServer options

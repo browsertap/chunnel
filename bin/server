@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 var commander = require("commander"),
+sprintf = require("sprintf").sprintf,
 server = require("..").server;
 
 
@@ -12,9 +13,25 @@ option("-b, --broadcast", "broadcast the chunnel server (MDNS)").
 parse(process.argv);
 
 
-server({
+
+
+
+server = server({
   confirm    : commander.ask,
   password   : commander.password,
   broadcast  : commander.broadcast
 }).listen(Number(commander.args.shift() || 9526));
+
+
+
+if(commander.ask) {
+  server.use(function(server) {
+    server.pre("connectClient", function(next, message, socket) {
+      commander.confirm(sprintf('"%s" would like to connect via "%s", allow? ', message.username || "unknown", message.domain), function(yes) {
+        if(yes) return next();
+        socket.error("Access denied");
+      })
+    })
+  });
+}
 

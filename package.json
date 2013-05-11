@@ -20,6 +20,8 @@
   "dependencies": {
     "mdns": "1.1.x",
     "underscore": "1.4.x",
-    "commander": "1.1.x"
+    "commander": "1.1.x",
+    "hooks": "0.3.x",
+    "sprintf": "0.1.x"
   }
 }
