@@ -43,7 +43,7 @@ class ChunnelServer extends SocketServer
     if password isnt @password
       return socket.error "Incorrect password"
 
-    console.log "client connected on domain #{domain}"
+    console.log "client \"#{message.username}\" connected on domain #{domain}"
 
     # listen in on the domain provided by the initial handshake
     if not @_httpServers.hasClient domain

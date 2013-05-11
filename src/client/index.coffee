@@ -21,7 +21,11 @@ class Client
 
     @_chunnelConnection = cc = socket.connect(hostParts.port, hostParts.hostname)
       
-    cc.send "client", { domain: options.domain, password: options.password }
+    cc.send "client", { 
+      domain: options.domain, 
+      password: options.password, 
+      username: options.username 
+    }
 
     cc.route 
       error         : @_onError

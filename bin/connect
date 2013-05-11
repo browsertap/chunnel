@@ -8,7 +8,8 @@ commander.
 usage("[portToTunnel] ... [options]").
 description("connects to a chunnel server").
 option("-p, --password [password]", "the chunnel server password").
-option("-s, --server [server]", "the chunnel server", "127.0.0.1:9526");
+option("-s, --server [server]", "the chunnel server", "127.0.0.1:9526").
+option("-u, --username [server]", "username of chunnel user", process.env.LOGNAME || "unknown");
 
 
 commander.on("--help", function() {
@@ -45,6 +46,7 @@ for(var i = args.length; i--;) {
     server: commander.server,
     domain: domain,
     password: commander.password,
+    username: commander.username,
     proxy: proxy
   }); 
 }
