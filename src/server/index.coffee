@@ -2,8 +2,9 @@ net           = require "net"
 ChunnelClient = require "./client"
 EventEmitter  = require("events").EventEmitter
 SocketServer  = require("../socket").Server
-HttpServers   = require("./httpServers")
+HttpServers   = require "./httpServers"
 hooks         = require "hooks"
+mdns          = require "mdns"
 _ = require "underscore"
 
 class ChunnelServer extends SocketServer
@@ -33,6 +34,7 @@ class ChunnelServer extends SocketServer
     # new http connection
     @on "connection" , @_onHttpConnection
 
+
   ###
   ###
 
@@ -41,9 +43,12 @@ class ChunnelServer extends SocketServer
   ###
   ###
 
-  listen: (port = 9526) ->
+  listen: (@port = 9526) ->
     super port
     console.log "chunnel server listening on port #{port} #{if @secret then 'with secret' else ''}"
+
+    if @options.broadcast
+      @broadcast()
     @
 
 
@@ -81,6 +86,15 @@ class ChunnelServer extends SocketServer
 
     # send a success response back to the client
     socket.send "success", { cid: @_cid, secret: client.secret }
+
+  ###
+  ###
+
+  broadcast: () ->
+    return if @_broadcasting
+    console.log "broadcasting server using multicast"
+    @_broadcasting = true
+    mdns.createAdvertisement(mdns.tcp("chunnel"), @port).start()
 
 
   ###

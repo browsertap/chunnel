@@ -8,17 +8,15 @@ commander.
 usage("[port] [options]").
 description("start a the chunnel server").
 option("-a, --ask", "show confirmation before a chunnel client connects").
-option("-p, --password [password]", "password protect the chunnel server").
+option("-s, --secret [password]", "password protect the chunnel server").
 option("-b, --broadcast", "broadcast the chunnel server (MDNS)").
 parse(process.argv);
 
 
 
-
-
 server = server({
   confirm    : commander.ask,
-  password   : commander.password,
+  password   : commander.secret,
   broadcast  : commander.broadcast
 }).listen(Number(commander.args.shift() || 9526));
 

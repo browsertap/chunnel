@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+var commander = require("commander"),
+mdns = require("mdns"),
+_ = require("underscore");
+
+
+commander.
+description("lists available chunnel servers in the local network").
+parse(process.argv);
+
+
+
+var browser = mdns.createBrowser(mdns.tcp("chunnel")), listed = {},
+kill = _.debounce(function() {
+  process.exit();
+}, 500);
+
+
+browser.on("serviceUp", function(service) {
+  if(listed[service.name])
+    return;
+  listed[service.name] = 1;
+  console.log("%s@%s:%s", service.name, service.addresses[0], service.port);
+  kill();
+});
+
+browser.start();

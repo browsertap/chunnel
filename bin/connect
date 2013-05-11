@@ -7,7 +7,7 @@ client = require("..").client;
 commander.
 usage("[portToTunnel] ... [options]").
 description("connects to a chunnel server").
-option("-p, --password [password]", "the chunnel server password").
+option("-s, --secret [password]", "the chunnel server password").
 option("-s, --server [server]", "the chunnel server", "127.0.0.1:9526").
 option("-u, --username [server]", "username of chunnel user", process.env.LOGNAME || "unknown");
 
@@ -19,9 +19,10 @@ commander.on("--help", function() {
   console.log("    $ chunnel connect 8080-8081");
   console.log("    $ chunnel connect google.com-google.dev:8085");
   console.log("");
-})
+});
 
-commander.parse(process.argv)
+commander.parse(process.argv);
+
 
 function parsePortOrProxy(portOrProxy) {
   var proxy;
@@ -45,20 +46,9 @@ for(var i = args.length; i--;) {
   client.connect({
     server: commander.server,
     domain: domain,
-    password: commander.password,
+    password: commander.secret,
     username: commander.username,
     proxy: proxy
   }); 
 }
 
-
-return;
-
-optimist = require("optimist")
-server   = require("..").server
-
-argv = optimist.
-usage('Usage: $0 [httpPort] [connectionPort]').
-argv
-
-server.listen(Number(argv._.shift() || 9526))
