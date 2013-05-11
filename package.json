@@ -1,11 +1,13 @@
 {
   "name": "chunnel",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Local Tunnel for the service: [Browsertap](http://browsertap.com)",
   "browserify": "./lib/browser.js",
   "bin": {
+    "chunnel": "./bin/cli",
+    "chunnel-connect": "./bin/connect",
     "chunnel-server": "./bin/server",
-    "chunnel": "./bin/client"
+    "chunnel-list": "./bin/list"
   },
   "repository": {
     "type": "git",
@@ -16,21 +18,8 @@
   "license": "BSD",
   "readmeFilename": "README.md",
   "dependencies": {
-    "colors": "0.6.x",
-    "guid": "0.0.x",
-    "mime": "1.2.x",
-    "outcome": "0.0.x",
-    "comerr": "0.0.x",
-    "plugin-express": "0.1.x",
-    "sprintf": "0.1.x",
-    "structr": "0.2.x",
+    "mdns": "1.1.x",
     "underscore": "1.4.x",
-    "vine": "0.1.x",
-    "step": "0.0.x",
-    "commander": "1.1.x",
-    "plugin": "0.2.x",
-    "send": "0.1.x",
-    "express": "3.0.x",
-    "optimist": "0.4.x"
+    "commander": "1.1.x"
   }
 }

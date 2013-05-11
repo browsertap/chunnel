@@ -19,7 +19,7 @@ class HttpServers
 
   hasClient: (domain) ->
     dp = @_parseDomain domain
-    return not @_servers[dp.port] or @_servers[dp.port].hasClient domain
+    return not @_servers[dp.port] or @_servers[dp.port].hasClient dp.hostname
 
 
   ###
@@ -36,7 +36,8 @@ class HttpServers
       @_domainCount[hn] = 1
       @_hosts.set hn
 
-    if not @_servers[port]
+
+    if not server = @_servers[port]
       @_servers[port] = server = new HttpServer()
       if not server.listen port
         return false

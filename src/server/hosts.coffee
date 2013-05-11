@@ -72,6 +72,7 @@ class Hosts
 
   _watchExit: () ->
     process.once "SIGINT", () =>
+    
       fs.writeFileSync @_path(), fs.readFileSync(@_path() + "-backup", "utf8")
       process.exit()
 

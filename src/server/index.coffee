@@ -9,8 +9,12 @@ class ChunnelServer extends SocketServer
   ###
   ###
 
-  constructor: () ->
+  constructor: (@options) ->
     super()
+
+    @password = options.password
+
+
     @_clients = []
     @_cid     = 0
 
@@ -24,15 +28,20 @@ class ChunnelServer extends SocketServer
 
   listen: (port = 9526) ->
     super port
-    console.log "chunnel server listening on port #{port}"
+    console.log "chunnel server listening on port #{port} #{if @secret then 'with secret' else ''}"
     @
 
 
   ###
   ###
 
-  _onChunnelClient: (domain, socket) ->
+  _onChunnelClient: (message, socket) ->
 
+    domain = message.domain
+    password = message.password
+
+    if password isnt @password
+      return socket.error "Incorrect password"
 
     console.log "client connected on domain #{domain}"
 
@@ -65,9 +74,7 @@ class ChunnelServer extends SocketServer
     client.addConnection socket.connection, message.secret
 
 
-
-
-exports.listen = (port) -> new ChunnelServer().listen(port)
+module.exports = (options) -> new ChunnelServer options
 
 
 

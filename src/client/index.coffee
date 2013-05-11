@@ -21,15 +21,15 @@ class Client
 
     @_chunnelConnection = cc = socket.connect(hostParts.port, hostParts.hostname)
       
-    cc.send "client", options.domain
+    cc.send "client", { domain: options.domain, password: options.password }
 
     cc.route 
       error         : @_onError
       success       : @_onConnected
       getConnection : @_onGetConnection
 
-    cc.connection.on "end", @_reconnect
-    cc.connection.on "error", @_reconnect
+    cc.connection.on "end"   , @_reconnect
+    cc.connection.on "error" , @_reconnect
     
 
   ###
@@ -37,9 +37,11 @@ class Client
 
   _reconnect: () =>
     console.log "chunnel server has disconnected, reconnecting"
-    @_secret = undefined
-    @_cid = undefined
+
+    @_cid       = undefined
+    @_secret    = undefined
     @_connected = false
+
     setTimeout (() =>
       @connect @options
     ), 2000
@@ -73,18 +75,16 @@ class Client
     console.log "creating http connection"
 
     # create a net connection for the proxy
-    c2 = net.connect(Number(@proxyParts.port or 80), @proxyParts.hostname)
+    c2 = net.connect Number(@proxyParts.port or 80), @proxyParts.hostname
 
     # create a socket connection for chunnel
-    c = socket.connect(Number(@hostParts.port), @hostParts.hostname)
+    c = socket.connect Number(@hostParts.port), @hostParts.hostname
 
     # send the connection off!
     c.send "connection", { cid: @_cid, secret: @_secret }
 
     c2.pipe(c.connection)
     c.connection.pipe(c2)
-
-
 
 
 

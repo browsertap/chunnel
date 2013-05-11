@@ -1,9 +1,20 @@
 #!/usr/bin/env node
-optimist = require("optimist")
-server   = require("..").server
+var commander = require("commander"),
+server = require("..").server;
 
-argv = optimist.
-usage('Usage: $0 [httpPort] [connectionPort]').
-argv
 
-server.listen(Number(argv._.shift() || 9526))
+commander.
+usage("[port] [options]").
+description("start a the chunnel server").
+option("-a, --ask", "show confirmation before a chunnel client connects").
+option("-p, --password [password]", "password protect the chunnel server").
+option("-b, --broadcast", "broadcast the chunnel server (MDNS)").
+parse(process.argv);
+
+
+server({
+  confirm    : commander.ask,
+  password   : commander.password,
+  broadcast  : commander.broadcast
+}).listen(Number(commander.args.shift() || 9526));
+

@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+var commander = require("commander");
+
+commander.
+command("connect [port]", "connect to a chunnel server").
+command("server [port]", "starts a chunnel server").
+command("list", "list available chunnel servers");
+
+commander.parse(process.argv);
