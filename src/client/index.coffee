@@ -5,8 +5,9 @@ net = require "net"
 hooks = require "hooks"
 mdns = require "mdns"
 _ = require "underscore"
+EventEmitter = require("events").EventEmitter
 
-class Client
+class Client extends EventEmitter
 
   ###
   ###
@@ -45,6 +46,7 @@ class Client
 
     cc.connection.on "end"   , @_reconnect
     cc.connection.on "error" , @_reconnect
+    @
     
 
   ###
@@ -81,6 +83,8 @@ class Client
     @_secret = result.secret
 
     console.log "tunnel \"#{@options.proxy}\" is now accessible via \"#{@options.domain}\" on \"#{@options.server}\""
+
+    @emit "connected"
 
 
   ###
@@ -124,4 +128,7 @@ class Client
 
 
 
-exports.connect = (options, callback) -> new Client().connect(options, callback)
+exports.connect = (options, callback) -> 
+  client = new Client()
+  client.connect(options, callback)
+  client

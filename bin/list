@@ -21,7 +21,7 @@ browser.on("serviceUp", function(service) {
     return;
   listed[service.name] = 1;
   console.log("%s@%s:%s", service.name, service.addresses[0], service.port);
-  kill();
+  //kill();
 });
 
 browser.start();
